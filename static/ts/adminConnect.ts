@@ -61,7 +61,7 @@ async function updateStatus(button, status) {
     update()
 
     // rerender the page
-    // location.reload
+    location.reload
 }
 
 async function sendWave() {
@@ -70,7 +70,7 @@ async function sendWave() {
     })
     update()
 
-    // location.reload
+    location.reload
 }
 
 async function addToWave(button) {
