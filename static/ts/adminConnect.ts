@@ -22,7 +22,12 @@ adminSocket.on("update", (data) => {
     // console.log(html)
     document.getElementById("content")!.innerHTML = html;
     
-
+    // update the timer input to match the actual value
+    var timerValue: any = document.getElementById("timerDurationSelector");
+    if(timerValue === null) { timerValue = {value: 1} }
+    fetch('/updateBusStatus', {method: "GET"})
+        .then(response => response.text())
+        .then(text => timerValue.value = text);
 });
 
 function update() {
