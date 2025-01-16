@@ -39,6 +39,27 @@ function lockWave() {
         update();
     });
 }
+function updateTimer() {
+    return __awaiter(this, void 0, void 0, function* () {
+        var timerValue = document.getElementById("timerDurationSelector");
+        if (timerValue === null) {
+            timerValue = { value: 1 };
+        }
+        const res = yield fetch("/setTimer", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ minutes: timerValue.value })
+        });
+        if (!res.ok) {
+            console.log(`Response status: ${res.status}`);
+        }
+        else {
+            console.log(yield res.text());
+        }
+    });
+}
 function updateStatus(button, status) {
     return __awaiter(this, void 0, void 0, function* () {
         let number = button.parentElement.parentElement.children[0].children[0].value;

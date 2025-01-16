@@ -39,6 +39,25 @@ async function lockWave() {
     update()
 }
 
+async function updateTimer() {
+    var timerValue: any = document.getElementById("timerDurationSelector");
+
+    if(timerValue === null) { timerValue = {value: 1} }
+    const res = await fetch("/setTimer", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({minutes: timerValue.value})
+    });
+    if (!res.ok) {
+        console.log(`Response status: ${res.status}`);
+    } else {
+        console.log(await res.text());
+    }
+    // TODO: update() resets the timer input value for some reason. fix that.
+}
+
 async function updateStatus(button, status) {
     let number = button.parentElement.parentElement.children[0].children[0].value
     let time =  new Date()
@@ -61,7 +80,7 @@ async function updateStatus(button, status) {
     update()
 
     // rerender the page
-    location.reload
+    // location.reload
 }
 
 async function sendWave() {
@@ -70,7 +89,7 @@ async function sendWave() {
     })
     update()
 
-    location.reload
+    // location.reload
 }
 
 async function addToWave(button) {
