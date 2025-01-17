@@ -110,7 +110,8 @@ exports.router.get("/admin", (req, res) => __awaiter(void 0, void 0, void 0, fun
         nextWave: yield Bus.find({ status: "Next Wave" }),
         loading: yield Bus.find({ status: "Loading" }),
         isLocked: false,
-        leavingAt: new Date()
+        leavingAt: new Date(),
+        timer: timer
     };
     data.isLocked = (yield Wave.findOne({})).locked;
     data.leavingAt = (yield Wave.findOne({})).leavingAt;
@@ -158,8 +159,15 @@ exports.router.post("/lockWave", (req, res) => __awaiter(void 0, void 0, void 0,
     res.send("success");
 }));
 exports.router.post("/setTimer", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    timer = Number(req.body.minutes) * 60;
+    var tmpTimer = Number(req.body.minutes) * 60;
+    if (Number.isNaN(tmpTimer) || tmpTimer === null) {
+        tmpTimer = 30;
+    }
+    timer = tmpTimer;
     res.send("success");
+}));
+exports.router.get("/getTimer", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.send(JSON.stringify({ minutes: timer / 60 }));
 }));
 exports.router.get("/leavingAt", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const leavingAt = (yield Wave.findOne({})).leavingAt;

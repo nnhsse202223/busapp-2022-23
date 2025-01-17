@@ -84,7 +84,8 @@ router.get("/admin", async (req: Request, res: Response) => {
         nextWave: await Bus.find({status: "Next Wave"}),
         loading: await Bus.find({status: "Loading"}),
         isLocked: false, 
-        leavingAt: new Date()
+        leavingAt: new Date(),
+        timer: timer
     };
     data.isLocked = (await Wave.findOne({})).locked;
     data.leavingAt = (await Wave.findOne({})).leavingAt;
@@ -141,8 +142,16 @@ router.post("/lockWave", async (req: Request, res: Response) => {
 });
 
 router.post("/setTimer", async (req: Request, res: Response) => {
-    timer = Number(req.body.minutes) * 60;
+    var tmpTimer = Number(req.body.minutes) * 60;
+    if(Number.isNaN(tmpTimer) || tmpTimer === null) {
+        tmpTimer = 30;
+    }
+    timer = tmpTimer;
     res.send("success");
+});
+
+router.get("/getTimer", async (req: Request, res: Response) => {
+    res.send(JSON.stringify({minutes: timer/60}));
 });
 
 router.get("/leavingAt", async (req: Request, res: Response) => {
