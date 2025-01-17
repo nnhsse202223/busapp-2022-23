@@ -151,7 +151,7 @@ router.post("/setTimer", async (req: Request, res: Response) => {
 });
 
 router.get("/getTimer", async (req: Request, res: Response) => {
-    res.send(timer/60);
+    res.send(JSON.stringify({minutes: timer/60}));
 });
 
 router.get("/leavingAt", async (req: Request, res: Response) => {

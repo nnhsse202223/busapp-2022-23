@@ -24,6 +24,15 @@ adminSocket.on("update", (data) => {
     const html = ejs.render(document.getElementById("getRender").getAttribute("render"), { data: data });
     // console.log(html)
     document.getElementById("content").innerHTML = html;
+    // update the timer input to match the actual value
+    var timerValue = document.getElementById("timerDurationSelector");
+    if (timerValue === null) {
+        timerValue = { value: 1 };
+    }
+    fetch('/getTimer', { method: "GET" })
+        .then(response => response.json())
+        .then(json => { timerValue.value = json.minutes; console.log(json); });
+    console.log(timerValue.value);
 });
 function update() {
     // console.log("update called")

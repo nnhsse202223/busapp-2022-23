@@ -167,7 +167,7 @@ exports.router.post("/setTimer", (req, res) => __awaiter(void 0, void 0, void 0,
     res.send("success");
 }));
 exports.router.get("/getTimer", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send(timer / 60);
+    res.send(JSON.stringify({ minutes: timer / 60 }));
 }));
 exports.router.get("/leavingAt", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const leavingAt = (yield Wave.findOne({})).leavingAt;

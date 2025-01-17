@@ -25,9 +25,10 @@ adminSocket.on("update", (data) => {
     // update the timer input to match the actual value
     var timerValue: any = document.getElementById("timerDurationSelector");
     if(timerValue === null) { timerValue = {value: 1} }
-    fetch('/updateBusStatus', {method: "GET"})
-        .then(response => response.text())
-        .then(text => timerValue.value = text);
+    fetch('/getTimer', {method: "GET"})
+        .then(response => response.json())
+        .then(json => { timerValue.value = json.minutes; console.log(json) });
+    console.log(timerValue.value);
 });
 
 function update() {
