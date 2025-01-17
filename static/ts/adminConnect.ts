@@ -61,7 +61,6 @@ async function updateTimer() {
     } else {
         console.log(await res.text());
     }
-    // TODO: update() resets the timer input value for some reason. fix that.
 }
 
 async function updateStatus(button, status) {
