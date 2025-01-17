@@ -22,7 +22,13 @@ adminSocket.on("update", (data) => {
     // console.log(html)
     document.getElementById("content")!.innerHTML = html;
     
-
+    // update the timer input to match the actual value
+    var timerValue: any = document.getElementById("timerDurationSelector");
+    if(timerValue === null) { timerValue = {value: 1} }
+    fetch('/getTimer', {method: "GET"})
+        .then(response => response.json())
+        .then(json => { timerValue.value = json.minutes; console.log(json) });
+    console.log(timerValue.value);
 });
 
 function update() {
@@ -37,6 +43,24 @@ async function lockWave() {
         method: 'POST'
     })
     update()
+}
+
+async function updateTimer() {
+    var timerValue: any = document.getElementById("timerDurationSelector");
+
+    if(timerValue === null) { timerValue = {value: 1} }
+    const res = await fetch("/setTimer", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({minutes: timerValue.value})
+    });
+    if (!res.ok) {
+        console.log(`Response status: ${res.status}`);
+    } else {
+        console.log(await res.text());
+    }
 }
 
 async function updateStatus(button, status) {

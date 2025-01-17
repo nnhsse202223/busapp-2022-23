@@ -24,6 +24,15 @@ adminSocket.on("update", (data) => {
     const html = ejs.render(document.getElementById("getRender").getAttribute("render"), { data: data });
     // console.log(html)
     document.getElementById("content").innerHTML = html;
+    // update the timer input to match the actual value
+    var timerValue = document.getElementById("timerDurationSelector");
+    if (timerValue === null) {
+        timerValue = { value: 1 };
+    }
+    fetch('/getTimer', { method: "GET" })
+        .then(response => response.json())
+        .then(json => { timerValue.value = json.minutes; console.log(json); });
+    console.log(timerValue.value);
 });
 function update() {
     // console.log("update called")
@@ -37,6 +46,28 @@ function lockWave() {
             method: 'POST'
         });
         update();
+    });
+}
+function updateTimer() {
+    return __awaiter(this, void 0, void 0, function* () {
+        var timerValue = document.getElementById("timerDurationSelector");
+        if (timerValue === null) {
+            timerValue = { value: 1 };
+        }
+        const res = yield fetch("/setTimer", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ minutes: timerValue.value })
+        });
+        if (!res.ok) {
+            console.log(`Response status: ${res.status}`);
+        }
+        else {
+            console.log(yield res.text());
+        }
+        // TODO: update() resets the timer input value for some reason. fix that.
     });
 }
 function updateStatus(button, status) {

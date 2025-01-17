@@ -119,13 +119,10 @@
 
 <div style="align-items: center; display: flex; justify-content: center;">
     <button class="button" onclick="resetAllBusses()">Reset All Buses</button>
-    <form id="timerForm" action="/setTimer" method="post">
-        <select name="minutes" style="margin-left: 10px;">
-            <% var options = []; %>
-            <% for(var i = 0.5; i <= 3; i+=0.5) { %>
-                <option value='<%= i %>'><%= i %></option>
-            <% } %>
-        </select>
-        <button type="submit">Submit</button>
-    </form>
+    <select name="minutes" id="timerDurationSelector" onchange="updateTimer()" style="margin-left: 10px;">
+        <% var options = []; %>
+        <% for(var i = 0.5; i <= 3; i+=0.5) { %>
+            <option <% if(data.timer/60 === i) { %> selected <% } %> value='<%= i %>'><%= i %></option>
+        <% } %>
+    </select>
 </div>
