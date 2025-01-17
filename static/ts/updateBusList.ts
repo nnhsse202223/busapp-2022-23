@@ -35,7 +35,7 @@ function removeBus_busList(secondChild: HTMLElement) {
     row.remove();
 }
 
-async function  save() {
+async function save() {
     if (!confirm("Are you sure you would like to update the bus list and reset all live pages?")) return;
     
     await fetch("/updateBusList", {
@@ -51,7 +51,6 @@ async function  save() {
     });
 
     updateBusList();
-
     window.location.assign("/admin");
 }
 

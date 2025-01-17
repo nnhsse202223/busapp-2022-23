@@ -70,19 +70,26 @@ async function sendWave() {
     })
     update()
 
+    alert("Wave sent!");
     // location.reload
 }
 
 async function addToWave(button) {
     await updateStatus(button, "Loading")
+    let number = button.parentElement.parentElement.children[0].children[0].value
+    alert(number + " added to wave");
 }
 
 async function removeFromWave(button) {
     await updateStatus(button, "")
+    let number = button.parentElement.parentElement.children[0].children[0].value
+    alert(number + "removed from wave");
 }
 
 async function addToNextWave(button) {
     await updateStatus(button, "Next Wave")
+    let number = button.parentElement.parentElement.children[0].children[0].value
+    alert(number + " added to next wave");
 }
 
 async function reset(button) {

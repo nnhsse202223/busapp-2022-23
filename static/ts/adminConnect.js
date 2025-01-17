@@ -66,22 +66,29 @@ function sendWave() {
             method: 'POST'
         });
         update();
+        alert("Wave sent!");
         // location.reload
     });
 }
 function addToWave(button) {
     return __awaiter(this, void 0, void 0, function* () {
         yield updateStatus(button, "Loading");
+        let number = button.parentElement.parentElement.children[0].children[0].value;
+        alert(number + " added to wave");
     });
 }
 function removeFromWave(button) {
     return __awaiter(this, void 0, void 0, function* () {
         yield updateStatus(button, "");
+        let number = button.parentElement.parentElement.children[0].children[0].value;
+        alert(number + "removed from wave");
     });
 }
 function addToNextWave(button) {
     return __awaiter(this, void 0, void 0, function* () {
         yield updateStatus(button, "Next Wave");
+        let number = button.parentElement.parentElement.children[0].children[0].value;
+        alert(number + " added to next wave");
     });
 }
 function reset(button) {
