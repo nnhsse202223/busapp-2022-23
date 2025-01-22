@@ -132,6 +132,10 @@ exports.router.get("/waveStatus", (req, res) => __awaiter(void 0, void 0, void 0
     res.send(wave.locked);
 }));
 exports.router.post("/updateBusChange", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     let busNumber = req.body.number;
     let busChange = req.body.change;
     let time = req.body.time;
@@ -139,6 +143,10 @@ exports.router.post("/updateBusChange", (req, res) => __awaiter(void 0, void 0, 
     res.send("success");
 }));
 exports.router.post("/updateBusStatus", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     let busNumber = req.body.number;
     let busStatus = req.body.status;
     let time = req.body.time;
@@ -146,12 +154,20 @@ exports.router.post("/updateBusStatus", (req, res) => __awaiter(void 0, void 0, 
     res.send("success");
 }));
 exports.router.post("/sendWave", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     yield Bus.updateMany({ status: "Loading" }, { $set: { status: "Gone" } });
     yield Bus.updateMany({ status: "Next Wave" }, { $set: { status: "Loading" } });
     yield Wave.findOneAndUpdate({}, { locked: false }, { upsert: true });
     res.send("success");
 }));
 exports.router.post("/lockWave", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     yield Wave.findOneAndUpdate({}, { locked: !(yield Wave.findOne({})).locked }, { upsert: true });
     const leavingAt = new Date();
     leavingAt.setSeconds(leavingAt.getSeconds() + timer);
@@ -159,6 +175,10 @@ exports.router.post("/lockWave", (req, res) => __awaiter(void 0, void 0, void 0,
     res.send("success");
 }));
 exports.router.post("/setTimer", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     var tmpTimer = Number(req.body.minutes) * 60;
     if (Number.isNaN(tmpTimer) || tmpTimer === null) {
         tmpTimer = 30;
@@ -174,6 +194,10 @@ exports.router.get("/leavingAt", (req, res) => __awaiter(void 0, void 0, void 0,
     res.send(leavingAt);
 }));
 exports.router.post("/resetAllBusses", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     yield Bus.updateMany({}, { $set: { status: "" } });
     res.send("success");
 }));
@@ -271,10 +295,15 @@ exports.router.get("/adminEmptyRow", (req, res) => {
 exports.router.get("/busList", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.type("json").send(yield Bus.find().distinct("busNumber"));
 }));
+//TODO: consult if we want this to be publically accessible or not, idk why it would need to be anyway
 exports.router.get("/whitelistFile", (req, res) => {
     res.type("json").send((0, fs_1.readFileSync)(path_1.default.resolve(__dirname, "../data/whitelist.json")));
 });
 exports.router.post("/updateBusList", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     // use the posted bus list to update the database, removing any buses that are not in the list, and adding any buses that are in the list but not in the database
     const busList = req.body.busList;
     let buses = yield Bus.find({});
@@ -305,13 +334,25 @@ exports.router.get('/help', (req, res) => {
     res.render('help');
 });
 exports.router.post("/whitelistFile", (req, res) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     fs_1.default.writeFileSync(path_1.default.resolve(__dirname, "../data/whitelist.json"), JSON.stringify(req.body.admins));
 });
 exports.router.post("/submitAnnouncement", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     yield Announcement.findOneAndUpdate({}, { announcement: req.body.announcement, tvAnnouncement: req.body.tvAnnouncement }, { upsert: true });
     res.redirect("/admin");
 }));
 exports.router.post("/clearAnnouncement", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
     yield Announcement.findOneAndUpdate({}, { announcement: "" }, { upsert: true });
 }));
 //# sourceMappingURL=router.js.map
