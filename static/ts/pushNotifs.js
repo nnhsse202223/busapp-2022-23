@@ -26,30 +26,31 @@ function enablePushNotifications(publicKey) {
         let permission = yield Notification.requestPermission();
         if (permission === "granted") {
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/js/serviceWorker.js', {
+                navigator.serviceWorker.register('/serviceWorker.js', {
                     scope: '/',
                 });
+                var registration = yield navigator.serviceWorker.ready;
                 console.log("a");
-                var registration;
-                try {
-                    registration = yield navigator.serviceWorker.ready;
-                }
-                catch (e) { }
-                console.log("b");
                 const subscription = yield registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(publicKey),
                 });
-                console.log("c");
-                /*
-                await fetch('/subscription', {
+                console.log("b");
+                const response = yield fetch('/subscription', {
                     method: 'POST',
-                    body: JSON.stringify({subscription, buses: [10, 11]}),
+                    body: JSON.stringify({ subscription, buses: [10, 11] }),
                     headers: {
                         'content-type': 'application/json',
                     },
                 });
-                */
+                console.log("c");
+                if (response.ok) {
+                    console.log(yield response.text());
+                }
+                else {
+                    console.log("error!" + response.status);
+                }
+                console.log("d");
                 const greeting = new Notification('Notifications were successfully enabled!', { icon: "/img/busAppIcon.png" });
             }
             else {

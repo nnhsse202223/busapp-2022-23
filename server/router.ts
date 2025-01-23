@@ -118,17 +118,22 @@ router.get("/admin", async (req: Request, res: Response) => {
 });
 
 
+router.get("/serviceWorker.js", async (req: Request, res: Response) => {
+    res.sendFile("serviceWorker.js", { root: path.join(__dirname, '../static/ts/') });
+})
+
 var subscription;
 router.post("/subscription", async (req: Request, res: Response) => {
     subscription = req.body.subscription;
     console.log(subscription);
     const buses = req.body.buses;
+    res.send("subscribed!");
 })
 
 router.get("/sendNotification", async (req: Request, res: Response) => {
 
-    webpush.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
-    res.send("yay");
+    const result = webpush.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
+    res.send("yay" + await subscription + await result);
 })
 
 

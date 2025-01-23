@@ -133,15 +133,19 @@ exports.router.get("/admin", (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.render("unauthorized");
     }
 }));
+exports.router.get("/serviceWorker.js", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.sendFile("serviceWorker.js", { root: path_1.default.join(__dirname, '../static/ts/') });
+}));
 var subscription;
 exports.router.post("/subscription", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     subscription = req.body.subscription;
     console.log(subscription);
     const buses = req.body.buses;
+    res.send("subscribed!");
 }));
 exports.router.get("/sendNotification", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    web_push_1.default.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
-    res.send("yay");
+    const result = web_push_1.default.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
+    res.send("yay" + (yield subscription) + (yield result));
 }));
 exports.router.get("/waveStatus", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // get the wave status from the wave schema
