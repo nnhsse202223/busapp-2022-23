@@ -216,17 +216,22 @@ var x = setInterval(async function() {
 }, 1000);
 
 async function fetchWithAlert(endpoint: string, method: string, header: HeadersInit,  data: object) {
-    alert("Update sent to server");
+    setTransparency(false);
     var response = await fetch(endpoint, {
         method: method, 
         headers: header,
         body: JSON.stringify(data),
     })
     if (response.ok) {
-        alert("Update applied");
+        // alert("Update applied");
     } else {
         alert("Update failed");
     }
 
     return response;
+}
+
+function setTransparency(option: boolean) {
+    var div = document.getElementsByClassName("popup")[0] as HTMLElement;
+    div.style.opacity = option ? "0" : "1";
 }

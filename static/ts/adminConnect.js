@@ -213,19 +213,23 @@ var x = setInterval(function () {
 }, 1000);
 function fetchWithAlert(endpoint, method, header, data) {
     return __awaiter(this, void 0, void 0, function* () {
-        alert("Update sent to server");
+        setTransparency(false);
         var response = yield fetch(endpoint, {
             method: method,
             headers: header,
             body: JSON.stringify(data),
         });
         if (response.ok) {
-            alert("Update applied");
+            // alert("Update applied");
         }
         else {
             alert("Update failed");
         }
         return response;
     });
+}
+function setTransparency(option) {
+    var div = document.getElementsByClassName("popup")[0];
+    div.style.opacity = option ? "0" : "1";
 }
 //# sourceMappingURL=adminConnect.js.map
