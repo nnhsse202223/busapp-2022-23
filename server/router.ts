@@ -4,6 +4,7 @@ import { getBuses, readData, readWhitelist } from './jsonHandler';
 import path from "path";
 import fs, {readFileSync} from "fs";
 export const router = express.Router();
+import webpush from 'web-push';
 const Announcement = require("./model/announcement");
 const Bus = require("./model/bus");
 const Weather = require("./model/weather");
@@ -11,6 +12,18 @@ const Wave = require("./model/wave");
 
 const CLIENT_ID = "319647294384-m93pfm59lb2i07t532t09ed5165let11.apps.googleusercontent.com"
 const oAuth2 = new OAuth2Client(CLIENT_ID);
+
+// FOT TESTING ONLY - TODO: PUT THIS IN DOTENV - DO NOT USE THIS KEY IN PRODUCTION
+const vapidPrivateKey = "bsvx_iSex2b1aHndnqjqNljmKBGK4Ms7eOWcO-HQsf8";
+const vapidPublicKey = "BOMNv0kxTOWaWCMRP4q57PRPLft4NyQywqcVYH5fGEbog7VMW5R4tsaUPdClNAQoDuFKjBDLY25_iRLXIX-5gL8"
+
+webpush.setVapidDetails(
+    'mailto:test@test.com',
+    vapidPublicKey,
+    vapidPrivateKey,
+);
+//webpush();
+
 
 const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -25,7 +38,8 @@ router.get("/", async (req: Request, res: Response) => {
     let data = {
         buses: await getBuses(), weather: await Weather.findOne({}),
         isLocked: false,
-        leavingAt: new Date()
+        leavingAt: new Date(),
+        vapidPublicKey
     };
     data.isLocked = (await Wave.findOne({})).locked;
     data.leavingAt = (await Wave.findOne({})).leavingAt;
@@ -102,6 +116,21 @@ router.get("/admin", async (req: Request, res: Response) => {
         res.render("unauthorized");
     }
 });
+
+
+var subscription;
+router.post("/subscription", async (req: Request, res: Response) => {
+    subscription = req.body.subscription;
+    console.log(subscription);
+    const buses = req.body.buses;
+})
+
+router.get("/sendNotification", async (req: Request, res: Response) => {
+
+    webpush.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
+    res.send("yay");
+})
+
 
 router.get("/waveStatus", async (req: Request, res: Response) => {
     // get the wave status from the wave schema

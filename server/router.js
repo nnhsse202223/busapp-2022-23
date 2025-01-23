@@ -42,12 +42,18 @@ const jsonHandler_1 = require("./jsonHandler");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importStar(require("fs"));
 exports.router = express_1.default.Router();
+const web_push_1 = __importDefault(require("web-push"));
 const Announcement = require("./model/announcement");
 const Bus = require("./model/bus");
 const Weather = require("./model/weather");
 const Wave = require("./model/wave");
 const CLIENT_ID = "319647294384-m93pfm59lb2i07t532t09ed5165let11.apps.googleusercontent.com";
 const oAuth2 = new google_auth_library_1.OAuth2Client(CLIENT_ID);
+// FOT TESTING ONLY - TODO: PUT THIS IN DOTENV - DO NOT USE THIS KEY IN PRODUCTION
+const vapidPrivateKey = "bsvx_iSex2b1aHndnqjqNljmKBGK4Ms7eOWcO-HQsf8";
+const vapidPublicKey = "BOMNv0kxTOWaWCMRP4q57PRPLft4NyQywqcVYH5fGEbog7VMW5R4tsaUPdClNAQoDuFKjBDLY25_iRLXIX-5gL8";
+web_push_1.default.setVapidDetails('mailto:test@test.com', vapidPublicKey, vapidPrivateKey);
+//webpush();
 const bodyParser = require('body-parser');
 exports.router.use(bodyParser.urlencoded({ extended: true }));
 Announcement.findOneAndUpdate({}, { announcement: "" }, { upsert: true });
@@ -59,7 +65,8 @@ exports.router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function
     let data = {
         buses: yield (0, jsonHandler_1.getBuses)(), weather: yield Weather.findOne({}),
         isLocked: false,
-        leavingAt: new Date()
+        leavingAt: new Date(),
+        vapidPublicKey
     };
     data.isLocked = (yield Wave.findOne({})).locked;
     data.leavingAt = (yield Wave.findOne({})).leavingAt;
@@ -125,6 +132,16 @@ exports.router.get("/admin", (req, res) => __awaiter(void 0, void 0, void 0, fun
     else {
         res.render("unauthorized");
     }
+}));
+var subscription;
+exports.router.post("/subscription", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    subscription = req.body.subscription;
+    console.log(subscription);
+    const buses = req.body.buses;
+}));
+exports.router.get("/sendNotification", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    web_push_1.default.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
+    res.send("yay");
 }));
 exports.router.get("/waveStatus", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // get the wave status from the wave schema

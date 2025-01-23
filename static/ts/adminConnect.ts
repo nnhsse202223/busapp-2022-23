@@ -3,7 +3,6 @@
 var adminSocket = window.io('/admin'); 
 var countDownDate = new Date();
 
-
 adminSocket.on("update", (data) => {
     // console.log("update received")
 
