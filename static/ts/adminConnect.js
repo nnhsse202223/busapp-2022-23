@@ -92,11 +92,17 @@ function updateStatus(button, status) {
 }
 function sendWave() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield fetch('/sendWave', {
-            method: 'POST'
-        });
+        // alert("Update sent to server");
+        // var response = await fetch('/sendWave', {
+        //     method: 'POST'
+        // })
+        // if (response.ok) {
+        //     alert("Update applied");
+        // } else {
+        //     alert("Update failed");
+        // }
+        fetchWithAlert("/sendWave", "POST", {});
         update();
-        alert("Wave sent!");
         // location.reload
     });
 }
@@ -194,4 +200,19 @@ var x = setInterval(function () {
         }
     });
 }, 1000);
+function fetchWithAlert(endpoint, method, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        alert("Update sent to server");
+        var response = yield fetch(endpoint, {
+            method: method,
+            body: JSON.stringify(data),
+        });
+        if (response.ok) {
+            alert("Update applied");
+        }
+        else {
+            alert("Update failed");
+        }
+    });
+}
 //# sourceMappingURL=adminConnect.js.map

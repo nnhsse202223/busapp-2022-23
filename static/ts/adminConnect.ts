@@ -89,12 +89,18 @@ async function updateStatus(button, status) {
 }
 
 async function sendWave() {
-    await fetch('/sendWave', {
-        method: 'POST'
-    })
+    // alert("Update sent to server");
+    // var response = await fetch('/sendWave', {
+    //     method: 'POST'
+    // })
+    // if (response.ok) {
+    //     alert("Update applied");
+    // } else {
+    //     alert("Update failed");
+    // }
+    fetchWithAlert("/sendWave", "POST", {});
     update()
 
-    alert("Wave sent!");
     // location.reload
 }
 
@@ -195,3 +201,15 @@ var x = setInterval(async function() {
     }
 }, 1000);
 
+async function fetchWithAlert(endpoint: string, method: string, data: object) {
+    alert("Update sent to server");
+    var response = await fetch(endpoint, {
+        method: method, 
+        body: JSON.stringify(data),
+    })
+    if (response.ok) {
+        alert("Update applied");
+    } else {
+        alert("Update failed");
+    }
+}
