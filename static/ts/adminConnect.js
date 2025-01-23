@@ -67,7 +67,6 @@ function updateTimer() {
         else {
             console.log(yield res.text());
         }
-        // TODO: update() resets the timer input value for some reason. fix that.
     });
 }
 function updateStatus(button, status) {

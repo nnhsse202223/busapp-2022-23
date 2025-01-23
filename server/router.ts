@@ -68,6 +68,8 @@ function authorize(req: Request) {
     req.session.isAdmin = readWhitelist().admins.includes(<string> req.session.userEmail); 
 }
 
+
+
 /* Admin page. This is where bus information can be updated from
 Reads from data file and displays data */
 router.get("/admin", async (req: Request, res: Response) => {
@@ -108,6 +110,11 @@ router.get("/waveStatus", async (req: Request, res: Response) => {
 });
 
 router.post("/updateBusChange", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
+
     let busNumber = req.body.number;
     let busChange = req.body.change;
     let time = req.body.time;
@@ -116,6 +123,11 @@ router.post("/updateBusChange", async (req: Request, res: Response) => {
 });
 
 router.post("/updateBusStatus", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
+
     let busNumber = req.body.number;
     let busStatus = req.body.status;
     let time = req.body.time;
@@ -125,6 +137,10 @@ router.post("/updateBusStatus", async (req: Request, res: Response) => {
 
 
 router.post("/sendWave", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
 
     await Bus.updateMany({ status: "Loading" }, { $set: { status: "Gone" } });
     await Bus.updateMany({ status: "Next Wave" }, { $set: { status: "Loading" } });
@@ -133,6 +149,10 @@ router.post("/sendWave", async (req: Request, res: Response) => {
 });
 
 router.post("/lockWave", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
 
     await Wave.findOneAndUpdate({}, { locked: !(await Wave.findOne({})).locked }, { upsert: true });
     const leavingAt = new Date();
@@ -142,6 +162,11 @@ router.post("/lockWave", async (req: Request, res: Response) => {
 });
 
 router.post("/setTimer", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
+
     var tmpTimer = Number(req.body.minutes) * 60;
     if(Number.isNaN(tmpTimer) || tmpTimer === null) {
         tmpTimer = 30;
@@ -161,6 +186,10 @@ router.get("/leavingAt", async (req: Request, res: Response) => {
 });
 
 router.post("/resetAllBusses", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
 
     await Bus.updateMany({}, { $set: { status: "" } }); 
     res.send("success");
@@ -278,11 +307,17 @@ router.get("/busList", async (req: Request, res: Response) => {
     res.type("json").send(await Bus.find().distinct("busNumber"));
 });
 
+//TODO: consult if we want this to be publically accessible or not, idk why it would need to be anyway
 router.get("/whitelistFile", (req: Request, res: Response) => {
     res.type("json").send(readFileSync(path.resolve(__dirname, "../data/whitelist.json")));
 });
 
 router.post("/updateBusList", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
+
     // use the posted bus list to update the database, removing any buses that are not in the list, and adding any buses that are in the list but not in the database
     const busList: string[] = req.body.busList;
     
@@ -314,16 +349,31 @@ router.get('/help',(req: Request, res: Response)=>{
 res.render('help');
 })
 router.post("/whitelistFile",(req:Request,res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
+
     fs.writeFileSync(path.resolve(__dirname, "../data/whitelist.json"), JSON.stringify(req.body.admins));
 });
 
 router.post("/submitAnnouncement", async (req: Request, res: Response) => {    //overwrites the announcement in the database
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
+
     await Announcement.findOneAndUpdate({}, {announcement: req.body.announcement, tvAnnouncement: req.body.tvAnnouncement}, {upsert: true});
     res.redirect("/admin");
 });
 
 
 router.post("/clearAnnouncement", async (req: Request, res: Response) => {
+    if (!req.session.userEmail) {
+        res.redirect("/login");
+        return;
+    }
+    
     await Announcement.findOneAndUpdate({}, {announcement: ""}, {upsert: true});
 });
 
