@@ -39,9 +39,10 @@ function update() {
 }
 
 async function lockWave() {
-    await fetch('/lockWave', {
-        method: 'POST'
-    })
+    // await fetch('/lockWave', {
+    //     method: 'POST'
+    // })
+    await fetchWithAlert("/lockWave", "POST", {}, {});
     update()
 }
 
@@ -49,13 +50,17 @@ async function updateTimer() {
     var timerValue: any = document.getElementById("timerDurationSelector");
 
     if(timerValue === null) { timerValue = {value: 1} }
-    const res = await fetch("/setTimer", {
-        method: 'POST',
-        headers: {
+    // const res = await fetch("/setTimer", {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({minutes: timerValue.value})
+    // });
+    const res = await fetchWithAlert("/setTimer", "POST", {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({minutes: timerValue.value})
-    });
+        }, 
+        {minutes: timerValue.value});
     if (!res.ok) {
         console.log(`Response status: ${res.status}`);
     } else {
@@ -74,13 +79,17 @@ async function updateStatus(button, status) {
     }
 
 
-    await fetch('/updateBusStatus', {
-        method: 'POST',
-        headers: {
+    // await fetch('/updateBusStatus', {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(data)
+    // })
+    await fetchWithAlert("/updateBusStatus", "POST", {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
+        }, 
+        data);
 
     update()
 
@@ -98,7 +107,7 @@ async function sendWave() {
     // } else {
     //     alert("Update failed");
     // }
-    fetchWithAlert("/sendWave", "POST", {});
+    await fetchWithAlert("/sendWave", "POST", {}, {});
     update()
 
     // location.reload
@@ -106,20 +115,20 @@ async function sendWave() {
 
 async function addToWave(button) {
     await updateStatus(button, "Loading")
-    let number = button.parentElement.parentElement.children[0].children[0].value
-    alert(number + " added to wave");
+    // let number = button.parentElement.parentElement.children[0].children[0].value
+    // alert(number + " added to wave");
 }
 
 async function removeFromWave(button) {
     await updateStatus(button, "")
-    let number = button.parentElement.parentElement.children[0].children[0].value
-    alert(number + "removed from wave");
+    // let number = button.parentElement.parentElement.children[0].children[0].value
+    // alert(number + "removed from wave");
 }
 
 async function addToNextWave(button) {
     await updateStatus(button, "Next Wave")
-    let number = button.parentElement.parentElement.children[0].children[0].value
-    alert(number + " added to next wave");
+    // let number = button.parentElement.parentElement.children[0].children[0].value
+    // alert(number + " added to next wave");
 }
 
 async function reset(button) {
@@ -127,9 +136,10 @@ async function reset(button) {
 }
 
 async function resetAllBusses(button) {
-    await fetch('/resetAllBusses', {
-        method: 'POST'
-    })
+    // await fetch('/resetAllBusses', {
+    //     method: 'POST'
+    // })
+    await fetchWithAlert("/resetAllBusses", "POST", {}, {});
     // location.reload
     update()
 
@@ -146,13 +156,17 @@ async function updateBusChange(button) {
         change: change,
         time: time,
     }
-    await fetch('/updateBusChange', {
-        method: 'POST',
-        headers: {
+    // await fetch('/updateBusChange', {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(data)
+    // })
+    await fetchWithAlert("/updateBusChange", "POST", {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
+        }, 
+        data);
     // location.reload
     update()
 
@@ -201,10 +215,11 @@ var x = setInterval(async function() {
     }
 }, 1000);
 
-async function fetchWithAlert(endpoint: string, method: string, data: object) {
+async function fetchWithAlert(endpoint: string, method: string, header: HeadersInit,  data: object) {
     alert("Update sent to server");
     var response = await fetch(endpoint, {
         method: method, 
+        headers: header,
         body: JSON.stringify(data),
     })
     if (response.ok) {
@@ -212,4 +227,6 @@ async function fetchWithAlert(endpoint: string, method: string, data: object) {
     } else {
         alert("Update failed");
     }
+
+    return response;
 }
