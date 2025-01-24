@@ -132,8 +132,12 @@ router.post("/subscription", async (req: Request, res: Response) => {
 
 router.get("/sendNotification", async (req: Request, res: Response) => {
 
-    const result = webpush.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
-    res.send("yay" + await subscription + await result);
+    const result = webpush.sendNotification(subscription, JSON.stringify({
+        title: 'Hey, this is a push notification!',
+        body: "does it work? i dont know...",
+        icon: "/img/busAppIcon.png"
+     }));
+    res.send("yay" + JSON.stringify(await subscription) + JSON.stringify(await result));
 })
 
 

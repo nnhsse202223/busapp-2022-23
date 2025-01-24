@@ -144,8 +144,12 @@ exports.router.post("/subscription", (req, res) => __awaiter(void 0, void 0, voi
     res.send("subscribed!");
 }));
 exports.router.get("/sendNotification", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = web_push_1.default.sendNotification(subscription, JSON.stringify({ title: 'Hey, this is a push notification!' }));
-    res.send("yay" + (yield subscription) + (yield result));
+    const result = web_push_1.default.sendNotification(subscription, JSON.stringify({
+        title: 'Hey, this is a push notification!',
+        body: "does it work? i dont know...",
+        icon: "/img/busAppIcon.png"
+    }));
+    res.send("yay" + JSON.stringify(yield subscription) + JSON.stringify(yield result));
 }));
 exports.router.get("/waveStatus", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // get the wave status from the wave schema
