@@ -140,7 +140,7 @@ var subscription;
 exports.router.post("/subscription", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     subscription = req.body.subscription;
     console.log(subscription);
-    const buses = req.body.buses;
+    const bus = req.body.bus;
     res.send("subscribed!");
 }));
 exports.router.get("/sendNotification", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -126,7 +126,7 @@ var subscription;
 router.post("/subscription", async (req: Request, res: Response) => {
     subscription = req.body.subscription;
     console.log(subscription);
-    const buses = req.body.buses;
+    const bus = req.body.bus;
     res.send("subscribed!");
 })
 
