@@ -3,6 +3,7 @@
 var adminSocket = window.io('/admin'); 
 var countDownDate = new Date();
 
+var updatingCount = 0;
 
 adminSocket.on("update", (data) => {
     // console.log("update received")
@@ -28,7 +29,6 @@ adminSocket.on("update", (data) => {
     fetch('/getTimer', {method: "GET"})
         .then(response => response.json())
         .then(json => { timerValue.value = json.minutes; console.log(json) });
-    console.log(timerValue.value);
 });
 
 function update() {
@@ -217,12 +217,20 @@ var x = setInterval(async function() {
 
 async function fetchWithAlert(endpoint: string, method: string, header: HeadersInit,  data: object) {
     setTransparency(false);
+    updatingCount++;
+    console.log(updatingCount);
     var response = await fetch(endpoint, {
         method: method, 
         headers: header,
         body: JSON.stringify(data),
     })
     if (response.ok) {
+        updatingCount--;
+    console.log(updatingCount);
+        if (updatingCount === 0) { setTransparency(true);
+        } else {
+            setTransparency(false);
+        }
         // alert("Update applied");
     } else {
         alert("Update failed");

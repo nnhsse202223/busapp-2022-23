@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 var adminSocket = window.io('/admin');
 var countDownDate = new Date();
+var updatingCount = 0;
 adminSocket.on("update", (data) => {
     // console.log("update received")
     // console.log(data)
@@ -32,7 +33,6 @@ adminSocket.on("update", (data) => {
     fetch('/getTimer', { method: "GET" })
         .then(response => response.json())
         .then(json => { timerValue.value = json.minutes; console.log(json); });
-    console.log(timerValue.value);
 });
 function update() {
     // console.log("update called")
@@ -214,12 +214,22 @@ var x = setInterval(function () {
 function fetchWithAlert(endpoint, method, header, data) {
     return __awaiter(this, void 0, void 0, function* () {
         setTransparency(false);
+        updatingCount++;
+        console.log(updatingCount);
         var response = yield fetch(endpoint, {
             method: method,
             headers: header,
             body: JSON.stringify(data),
         });
         if (response.ok) {
+            updatingCount--;
+            console.log(updatingCount);
+            if (updatingCount === 0) {
+                setTransparency(true);
+            }
+            else {
+                setTransparency(false);
+            }
             // alert("Update applied");
         }
         else {
