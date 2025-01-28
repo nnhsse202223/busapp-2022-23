@@ -10,13 +10,8 @@
             <img src=<%= data.weather.icon %>>
         </div>
     </div>
-    <!--
-    <div class="notif-container">
-        <a id="notif-notice" onclick="requestNotificationPermission()"><i class="fa-solid fa-bell"></i></a>
-    </div>
-    -->
     <div class="buttons-container">
-        <div class="notif-container">
+        <div id="notif-container">
             <a id="notif-button" onclick="enablePushNotifications('<%= data.vapidPublicKey %>')">Enable Notifications</a>
         </div>
         <div class="login-container">
@@ -102,6 +97,7 @@
     </div>
     
 </div>
+
 <p style="color: #006678; font-size: 100%; text-align: center;">Credits: Pierre Hanlet, JD Piar, Varun Vaid, Maaz Zubair, Sayee Anand, Wyatt Barnes, Kurt Lovisa, Nolan Yee, Devam Das, Ronith Manikonda, Everett Dombrowski, Rohan Rao</p>
 
 <!-- <p id="contactInfo">

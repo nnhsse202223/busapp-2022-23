@@ -22,6 +22,7 @@ const urlBase64ToUint8Array = (base64String) => {
     return outputArray;
 };
 function enablePushNotifications(publicKey) {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         let permission = yield Notification.requestPermission();
         if (permission === "granted") {
@@ -30,28 +31,30 @@ function enablePushNotifications(publicKey) {
                     scope: '/',
                 });
                 var registration = yield navigator.serviceWorker.ready;
-                console.log("a");
                 const subscription = yield registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(publicKey),
                 });
-                console.log("b");
-                const response = yield fetch('/subscription', {
-                    method: 'POST',
-                    body: JSON.stringify({ subscription, buses: [10, 11] }),
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                });
-                console.log("c");
-                if (response.ok) {
-                    console.log(yield response.text());
+                localStorage.setItem("pushObject", JSON.stringify(subscription));
+                const pins = ((_a = localStorage.getItem("pins")) !== null && _a !== void 0 ? _a : "").split(", ");
+                for (var i = 0; i < pins.length; i++) {
+                    const response = yield fetch("/subscribe", {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST",
+                        body: JSON.stringify({ busNumber: Number(pins[i]), pushObject: localStorage.getItem("pushObject"), remove: false }),
+                    });
+                    if (response.ok) {
+                        console.log(yield response.text());
+                    }
+                    else {
+                        console.log("error!" + response.status);
+                        alert("Error! Please try again...");
+                    }
                 }
-                else {
-                    console.log("error!" + response.status);
-                }
-                console.log("d");
                 const greeting = new Notification('Notifications were successfully enabled!', { icon: "/img/busAppIcon.png" });
+                (_b = document.getElementById("notif-container")) === null || _b === void 0 ? void 0 : _b.remove();
             }
             else {
                 alert("Your browser does not support ServiceWorkers. Push notifications will not work.");
@@ -62,4 +65,25 @@ function enablePushNotifications(publicKey) {
         }
     });
 }
+var areServiceWorkersWorking = navigator.serviceWorker.getRegistrations().then(e => {
+    if (e.length !== 0) {
+        e.forEach(i => {
+            if (!i.active) {
+                console.log(i);
+                return false;
+            }
+        });
+    }
+    else {
+        return false;
+    }
+    return true;
+});
+areServiceWorkersWorking.then(condition => {
+    var _a;
+    if (Notification.permission === "granted" && condition) {
+        console.log(areServiceWorkersWorking);
+        (_a = document.getElementById("notif-container")) === null || _a === void 0 ? void 0 : _a.remove();
+    }
+});
 //# sourceMappingURL=pushNotifs.js.map

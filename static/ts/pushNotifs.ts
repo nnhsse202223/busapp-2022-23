@@ -24,26 +24,29 @@ async function enablePushNotifications(publicKey) {
             });
 
             var registration = await navigator.serviceWorker.ready;
-            console.log("a")
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(publicKey),
             });
-            console.log("b")
-            const response = await fetch('/subscription', {    
-                method: 'POST',    
-                body: JSON.stringify({subscription, buses: [10, 11]}),    
-                headers: {      
-                    'content-type': 'application/json',    
-                },  
-            });
-            console.log("c")
 
-            if(response.ok) { console.log(await response.text()) }
-            else {console.log("error!" + response.status)}
-            console.log("d")
+            localStorage.setItem("pushObject", JSON.stringify(subscription))
+
+            const pins = (localStorage.getItem("pins") ?? "").split(", ");
+            for(var i = 0; i < pins.length; i++) {
+                const response = await fetch("/subscribe", {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    method: "POST",
+                    body: JSON.stringify({busNumber: Number(pins[i]) , pushObject: localStorage.getItem("pushObject"), remove: false}),
+                });
+
+                if(response.ok) { console.log(await response.text()) }
+                else {console.log("error!" + response.status); alert("Error! Please try again...")}
+            }
             
             const greeting = new Notification('Notifications were successfully enabled!', {icon: "/img/busAppIcon.png"});
+            document.getElementById("notif-container")?.remove()
         } else {
             alert("Your browser does not support ServiceWorkers. Push notifications will not work.");
         }
@@ -51,3 +54,24 @@ async function enablePushNotifications(publicKey) {
         alert("You denied notification permission, this will result in push notifications not working");
     }
 }
+
+var areServiceWorkersWorking = navigator.serviceWorker.getRegistrations().then(e => {
+    if(e.length !== 0) {
+        e.forEach( i => {
+            if(!i.active) {
+                console.log(i); 
+                return false;
+            }
+        } )
+    } else {
+        return false;
+    }
+    return true;
+});
+
+areServiceWorkersWorking.then(condition => {
+    if (Notification.permission === "granted" && condition) {
+        console.log(areServiceWorkersWorking);
+        document.getElementById("notif-container")?.remove()
+    }
+})

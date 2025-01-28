@@ -74,50 +74,22 @@ body {
     gap: 2%;
 }
 
-.help-container {
-    padding: 0 2%;
+.buttons-container > * {
     text-align: right;
     height: 80%;
-    grid-column: 4/4;
-    grid-row: 1/3;
 }
 
-.help-button {
-    border-radius: 10px;
-    padding: 0 2%;
-    font-family: 'Montserrat', sans-serif;
-    text-decoration: none;
-    font-size: 3.5vw;
-    background-color: #327fa8;
-    color: #ffffff;
-    padding: 4%;
-}
-
-.login-container {
-    text-align: right;
-    height: 80%;
-    grid-column: 3/4;
-    grid-row: 1/3;
-}
-
-.notif-container {
-    float: right;
-    text-align: right;
-    height: 80%;
-    margin: -2.5% 0 0 0;
-    grid-column: 2/3;
-    grid-row: 1/2;
-}
-
-#login-button {
+.help-button, #notif-button, #login-button {
     border-radius: 10px;
     font-family: 'Montserrat', sans-serif;
     text-decoration: none;
     font-size: 3.5vw;
     background-color: #327fa8;
     color: #ffffff;
-    padding: 4%;
+    padding: 5px;
+    text-wrap: nowrap;
 }
+
 .button {
     background-color: #4CAF50; /* Green */
     border: none;
@@ -292,12 +264,8 @@ body {
         grid-template-columns: 4fr 9fr 3fr;
     }
 
-    #login-button {
+    #login-button, #notif-button, .help-button {
         font-size: 1.8vw;
-    }
-
-    .notif-container {
-        margin: -0.25% -2% 0 0;
     }
 
     #notif-notice {
