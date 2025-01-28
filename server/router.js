@@ -42,12 +42,20 @@ const jsonHandler_1 = require("./jsonHandler");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importStar(require("fs"));
 exports.router = express_1.default.Router();
+const web_push_1 = __importDefault(require("web-push"));
+const dotenv = require("dotenv");
 const Announcement = require("./model/announcement");
 const Bus = require("./model/bus");
 const Weather = require("./model/weather");
 const Wave = require("./model/wave");
+const Subscription = require("./model/subscription");
 const CLIENT_ID = "319647294384-m93pfm59lb2i07t532t09ed5165let11.apps.googleusercontent.com";
 const oAuth2 = new google_auth_library_1.OAuth2Client(CLIENT_ID);
+dotenv.config({ path: ".env" });
+// Remember to set vapid keys in .env - run ```npx web-push generate-vapid-keys``` to generate
+const vapidPrivateKey = process.env.VAPID_PRIVATE;
+const vapidPublicKey = process.env.VAPID_PUBLIC;
+web_push_1.default.setVapidDetails('mailto:test@test.com', vapidPublicKey, vapidPrivateKey);
 const bodyParser = require('body-parser');
 exports.router.use(bodyParser.urlencoded({ extended: true }));
 Announcement.findOneAndUpdate({}, { announcement: "" }, { upsert: true });
@@ -59,7 +67,8 @@ exports.router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function
     let data = {
         buses: yield (0, jsonHandler_1.getBuses)(), weather: yield Weather.findOne({}),
         isLocked: false,
-        leavingAt: new Date()
+        leavingAt: new Date(),
+        vapidPublicKey
     };
     data.isLocked = (yield Wave.findOne({})).locked;
     data.leavingAt = (yield Wave.findOne({})).leavingAt;
@@ -126,6 +135,21 @@ exports.router.get("/admin", (req, res) => __awaiter(void 0, void 0, void 0, fun
         res.render("unauthorized");
     }
 }));
+exports.router.get("/serviceWorker.js", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.sendFile("serviceWorker.js", { root: path_1.default.join(__dirname, '../static/ts/') });
+}));
+exports.router.post("/subscribe", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const subscription = req.body.pushObject;
+    const num = Number(req.body.busNumber);
+    const rm = req.body.remove;
+    if (rm) {
+        (yield Subscription.find({ subscription, bus: num })).forEach((e) => __awaiter(void 0, void 0, void 0, function* () { return yield Subscription.findByIdAndDelete(e._id); }));
+    }
+    else {
+        yield Subscription.create({ subscription, bus: num });
+    }
+    res.send("success!");
+}));
 exports.router.get("/waveStatus", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // get the wave status from the wave schema
     const wave = yield Wave.findOne({});
@@ -158,6 +182,23 @@ exports.router.post("/sendWave", (req, res) => __awaiter(void 0, void 0, void 0,
         res.redirect("/login");
         return;
     }
+    if (!(null === (yield Wave.findOne({ locked: true }))))
+        (yield Bus.find({ status: "Loading" })).forEach((bus) => __awaiter(void 0, void 0, void 0, function* () {
+            (yield Subscription.find({ bus: bus.busNumber })).forEach((sub) => __awaiter(void 0, void 0, void 0, function* () {
+                try {
+                    yield web_push_1.default.sendNotification(JSON.parse(sub.subscription), JSON.stringify({
+                        title: 'Your Bus Just Left!',
+                        body: `Bus number ${bus.busNumber} just left.`,
+                        icon: "/img/busAppIcon.png"
+                    }));
+                }
+                catch (e) {
+                    if (typeof (e) == web_push_1.default.WebPushError && e.statusCode === 410) {
+                        yield Subscription.findByIdAndDelete(sub._id);
+                    }
+                }
+            }));
+        }));
     yield Bus.updateMany({ status: "Loading" }, { $set: { status: "Gone" } });
     yield Bus.updateMany({ status: "Next Wave" }, { $set: { status: "Loading" } });
     yield Wave.findOneAndUpdate({}, { locked: false }, { upsert: true });
@@ -172,6 +213,23 @@ exports.router.post("/lockWave", (req, res) => __awaiter(void 0, void 0, void 0,
     const leavingAt = new Date();
     leavingAt.setSeconds(leavingAt.getSeconds() + timer);
     yield Wave.findOneAndUpdate({}, { leavingAt: leavingAt }, { upsert: true });
+    if (!(null === (yield Wave.findOne({ locked: true }))))
+        (yield Bus.find({ status: "Loading" })).forEach((bus) => __awaiter(void 0, void 0, void 0, function* () {
+            (yield Subscription.find({ bus: bus.busNumber })).forEach((sub) => __awaiter(void 0, void 0, void 0, function* () {
+                try {
+                    yield web_push_1.default.sendNotification(JSON.parse(sub.subscription), JSON.stringify({
+                        title: 'Your Bus is Here!',
+                        body: `Bus number ${bus.busNumber} is currently loading, and will leave in ${Math.floor(timer / 60)} minutes and ${timer % 60} seconds`,
+                        icon: "/img/busAppIcon.png"
+                    }));
+                }
+                catch (e) {
+                    if (typeof (e) == web_push_1.default.WebPushError && e.statusCode === 410) {
+                        yield Subscription.findByIdAndDelete(sub._id);
+                    }
+                }
+            }));
+        }));
     res.send("success");
 }));
 exports.router.post("/setTimer", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

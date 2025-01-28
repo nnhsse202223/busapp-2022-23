@@ -4,13 +4,27 @@ import { getBuses, readData, readWhitelist } from './jsonHandler';
 import path from "path";
 import fs, {readFileSync} from "fs";
 export const router = express.Router();
+import webpush from 'web-push';
+const dotenv = require("dotenv");
 const Announcement = require("./model/announcement");
 const Bus = require("./model/bus");
 const Weather = require("./model/weather");
 const Wave = require("./model/wave");
+const Subscription = require("./model/subscription");
 
 const CLIENT_ID = "319647294384-m93pfm59lb2i07t532t09ed5165let11.apps.googleusercontent.com"
 const oAuth2 = new OAuth2Client(CLIENT_ID);
+
+dotenv.config({ path: ".env" });
+// Remember to set vapid keys in .env - run ```npx web-push generate-vapid-keys``` to generate
+const vapidPrivateKey = process.env.VAPID_PRIVATE;
+const vapidPublicKey = process.env.VAPID_PUBLIC;
+
+webpush.setVapidDetails(
+    'mailto:test@test.com',
+    vapidPublicKey,
+    vapidPrivateKey,
+);
 
 const bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -25,7 +39,8 @@ router.get("/", async (req: Request, res: Response) => {
     let data = {
         buses: await getBuses(), weather: await Weather.findOne({}),
         isLocked: false,
-        leavingAt: new Date()
+        leavingAt: new Date(),
+        vapidPublicKey
     };
     data.isLocked = (await Wave.findOne({})).locked;
     data.leavingAt = (await Wave.findOne({})).leavingAt;
@@ -103,6 +118,23 @@ router.get("/admin", async (req: Request, res: Response) => {
     }
 });
 
+
+router.get("/serviceWorker.js", async (req: Request, res: Response) => {
+    res.sendFile("serviceWorker.js", { root: path.join(__dirname, '../static/ts/') });
+})
+
+router.post("/subscribe", async (req: Request, res: Response) => {
+    const subscription = req.body.pushObject;
+    const num = Number(req.body.busNumber);
+    const rm = req.body.remove;
+    if(rm) {
+        (await Subscription.find({subscription, bus: num})).forEach(async (e) => await Subscription.findByIdAndDelete(e._id));
+    } else {
+        await Subscription.create({subscription, bus: num})
+    }
+    res.send("success!");
+})
+
 router.get("/waveStatus", async (req: Request, res: Response) => {
     // get the wave status from the wave schema
     const wave = await Wave.findOne({});
@@ -142,9 +174,26 @@ router.post("/sendWave", async (req: Request, res: Response) => {
         return;
     }
 
+    if(!(null === await Wave.findOne({locked: true})))(await Bus.find({status: "Loading"})).forEach(async (bus) => {
+        (await Subscription.find({bus: bus.busNumber})).forEach(async (sub) => {
+            try {
+                await webpush.sendNotification(JSON.parse(sub.subscription), JSON.stringify({
+                    title: 'Your Bus Just Left!',
+                    body: `Bus number ${bus.busNumber} just left.`,
+                    icon: "/img/busAppIcon.png"
+                }));
+            } catch(e) {
+                if(typeof(e) == webpush.WebPushError && (<webpush.WebPushError>e).statusCode === 410) {
+                    await Subscription.findByIdAndDelete(sub._id);
+                }
+            }
+        });
+    })
+
     await Bus.updateMany({ status: "Loading" }, { $set: { status: "Gone" } });
     await Bus.updateMany({ status: "Next Wave" }, { $set: { status: "Loading" } });
     await Wave.findOneAndUpdate({}, { locked: false }, { upsert: true });
+    
     res.send("success");
 });
 
@@ -158,6 +207,22 @@ router.post("/lockWave", async (req: Request, res: Response) => {
     const leavingAt = new Date();
     leavingAt.setSeconds(leavingAt.getSeconds() + timer);
     await Wave.findOneAndUpdate({}, { leavingAt: leavingAt }, { upsert: true });
+
+    if(!(null === await Wave.findOne({locked: true})))(await Bus.find({status: "Loading"})).forEach(async (bus) => {
+        (await Subscription.find({bus: bus.busNumber})).forEach(async (sub) => {
+            try {
+                await webpush.sendNotification(JSON.parse(sub.subscription), JSON.stringify({
+                    title: 'Your Bus is Here!',
+                    body: `Bus number ${bus.busNumber} is currently loading, and will leave in ${Math.floor(timer/60)} minutes and ${timer % 60} seconds`,
+                    icon: "/img/busAppIcon.png"
+                }));
+            } catch(e) {
+                if(typeof(e) == webpush.WebPushError && (<webpush.WebPushError>e).statusCode === 410) {
+                    await Subscription.findByIdAndDelete(sub._id);
+                }
+            }
+        });
+    })
     res.send("success");
 });
 
