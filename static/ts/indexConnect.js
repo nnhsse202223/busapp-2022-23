@@ -16,6 +16,7 @@ var pins = [];
 var notifStatus = {};
 updatePins();
 updateTables();
+updateButton();
 // end of initializing stuff
 indexSocket.on("update", (data) => {
     // console.log("update received")
@@ -28,6 +29,7 @@ indexSocket.on("update", (data) => {
     const html = ejs.render(document.getElementById("getRender").getAttribute("render"), { data: data, announcement: data.announcement });
     document.getElementById("content").innerHTML = html;
     updateTables();
+    updateButton();
 });
 function updateTables() {
     updatePins();
@@ -130,6 +132,29 @@ fetch('/leavingAt')
     .catch(error => {
     console.error('Error:', error);
 });
+function updateButton() {
+    var areServiceWorkersWorking = navigator.serviceWorker.getRegistrations().then(e => {
+        if (e.length !== 0) {
+            e.forEach(i => {
+                if (!i.active) {
+                    console.log(i);
+                    return false;
+                }
+            });
+        }
+        else {
+            return false;
+        }
+        return true;
+    });
+    areServiceWorkersWorking.then(condition => {
+        var _a;
+        if (Notification.permission === "granted" && condition) {
+            console.log(areServiceWorkersWorking);
+            (_a = document.getElementById("notif-container")) === null || _a === void 0 ? void 0 : _a.remove();
+        }
+    });
+}
 // Update the count down every 1 second
 var x = setInterval(function () {
     return __awaiter(this, void 0, void 0, function* () {

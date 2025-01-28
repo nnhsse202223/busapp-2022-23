@@ -9,6 +9,7 @@ var pins: number[] = [];
 var notifStatus = {};
 updatePins();
 updateTables();
+updateButton();
 
 // end of initializing stuff
 
@@ -26,7 +27,7 @@ indexSocket.on("update", (data) => {
     const html = ejs.render(document.getElementById("getRender")!.getAttribute("render")!, {data: data, announcement: data.announcement});
     document.getElementById("content")!.innerHTML = html;
     updateTables();
-
+    updateButton();
 });
 
 function updateTables() { // updates what rows show on the pinned list and what buttons show Unpin or Pin on the full list.
@@ -135,6 +136,30 @@ fetch('/leavingAt')
     .catch(error => {
         console.error('Error:', error);
     });
+
+
+function updateButton() {
+    var areServiceWorkersWorking = navigator.serviceWorker.getRegistrations().then(e => {
+        if(e.length !== 0) {
+            e.forEach( i => {
+                if(!i.active) {
+                    console.log(i); 
+                    return false;
+                }
+            } )
+        } else {
+            return false;
+        }
+        return true;
+    });
+
+    areServiceWorkersWorking.then(condition => {
+        if (Notification.permission === "granted" && condition) {
+            console.log(areServiceWorkersWorking);
+            document.getElementById("notif-container")?.remove();
+        }
+    });
+}
 
 // Update the count down every 1 second
 var x = setInterval(async function() {

@@ -65,25 +65,4 @@ function enablePushNotifications(publicKey) {
         }
     });
 }
-var areServiceWorkersWorking = navigator.serviceWorker.getRegistrations().then(e => {
-    if (e.length !== 0) {
-        e.forEach(i => {
-            if (!i.active) {
-                console.log(i);
-                return false;
-            }
-        });
-    }
-    else {
-        return false;
-    }
-    return true;
-});
-areServiceWorkersWorking.then(condition => {
-    var _a;
-    if (Notification.permission === "granted" && condition) {
-        console.log(areServiceWorkersWorking);
-        (_a = document.getElementById("notif-container")) === null || _a === void 0 ? void 0 : _a.remove();
-    }
-});
 //# sourceMappingURL=pushNotifs.js.map
