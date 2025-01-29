@@ -262,11 +262,13 @@ exports.router.post("/resetAllBusses", (req, res) => __awaiter(void 0, void 0, v
 exports.router.get("/beans", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.sendFile(path_1.default.resolve(__dirname, "../static/img/beans.jpg"));
 }));
+// old manifest, leaving it because im not sure if anything still uses it?
 exports.router.get("/manifest.webmanifest", (req, res) => {
     res.sendFile(path_1.default.resolve(__dirname, "../data/manifest.webmanifest"));
 });
-exports.router.get("/sw.js", (req, res) => {
-    res.sendFile(path_1.default.resolve(__dirname, "../sw.js"));
+// new manifest
+exports.router.get("/manifest.json", (req, res) => {
+    res.sendFile(path_1.default.resolve(__dirname, "../data/manifest.json"));
 });
 /* Admin page. This is where bus information can be updated from
 Reads from data file and displays data */

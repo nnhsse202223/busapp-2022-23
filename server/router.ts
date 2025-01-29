@@ -265,12 +265,16 @@ router.get("/beans", async (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, "../static/img/beans.jpg"));
 });
 
+// old manifest, leaving it because im not sure if anything still uses it?
 router.get("/manifest.webmanifest", (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, "../data/manifest.webmanifest"))
 });
-router.get("/sw.js", (req: Request, res: Response) => {
-    res.sendFile(path.resolve(__dirname, "../sw.js"))
+
+// new manifest
+router.get("/manifest.json", (req: Request, res: Response) => {
+    res.sendFile(path.resolve(__dirname, "../data/manifest.json"))
 });
+
 
 /* Admin page. This is where bus information can be updated from
 Reads from data file and displays data */
