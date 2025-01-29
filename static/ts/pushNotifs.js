@@ -24,12 +24,10 @@ const urlBase64ToUint8Array = (base64String) => {
 function enablePushNotifications(publicKey) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        let permission = yield Notification.requestPermission();
-        if (permission === "granted") {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/serviceWorker.js', {
-                    scope: '/',
-                });
+        if ('Notification' in window && 'serviceWorker' in navigator) {
+            let permission = yield Notification.requestPermission();
+            if (permission === "granted") {
+                navigator.serviceWorker.register('/serviceWorker.js', { scope: '/' });
                 var registration = yield navigator.serviceWorker.ready;
                 const subscription = yield registration.pushManager.subscribe({
                     userVisibleOnly: true,
@@ -50,18 +48,20 @@ function enablePushNotifications(publicKey) {
                     }
                     else {
                         console.log("error!" + response.status);
-                        alert("Error! Please try again...");
+                        alert("Something went wrong while subscribing to your pinned buses. Please unpin and repin them.");
                     }
                 }
-                const greeting = new Notification('Notifications were successfully enabled!', { icon: "/img/busAppIcon.png" });
                 (_b = document.getElementById("notif-container")) === null || _b === void 0 ? void 0 : _b.remove();
             }
             else {
-                alert("Your browser does not support ServiceWorkers. Push notifications will not work.");
+                alert("You denied notification permission, this will result in push notifications not working");
             }
         }
+        else if ('serviceWorker' in navigator) {
+            alert("");
+        }
         else {
-            alert("You denied notification permission, this will result in push notifications not working");
+            alert("Your browser is not supported :(");
         }
     });
 }

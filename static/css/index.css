@@ -16,6 +16,23 @@ body {
     height: 7%;
 }
 
+#IOSnotifpopup {
+    box-sizing: border-box;
+    display: unset; 
+    position: fixed; 
+    top: 50%; 
+    left: 50%; 
+    transform: 
+    translateX(-50%) 
+    translateY(-50%); 
+    width: 90%; 
+    height: 90%;
+    background-color: lightgray;
+    border: 5px solid #327fa8;
+    border-radius: 10px;
+    padding: 15px;
+}
+
 .weather-container {
     grid-column: 1/2;
     grid-row: 1/3;
