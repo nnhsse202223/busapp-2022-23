@@ -3,6 +3,7 @@
     <textarea type="text" name="announcement" class="content"><%= currentAnnouncement%></textarea>
     <div class="buttons">
         <button class="button" type="submit" onclick="clearAnnouncement()">Clear Current Announcement</button>
+        <button class="button" type="submit" onclick="updateAnnouncement()">Update Announcement</button>
 
     </div>
     <text class="label">TV Announcement</label>
@@ -21,5 +22,10 @@
 <script>
     function clearTvAnnouncement() {
         document.getElementsByName("tvAnnouncement")[0].value = "";
+    }
+</script>
+<script>
+    function updateAnnouncement() {
+        document.getElementsByName("announcement")[0].value = "<%= currentAnnouncement%>";
     }
 </script>
