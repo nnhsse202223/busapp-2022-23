@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var adminSocket = window.io('/admin');
+var adminSocket = window.io("/admin");
 var countDownDate = new Date();
 var updatingCount = 0;
 adminSocket.on("update", (data) => {
@@ -30,9 +30,12 @@ adminSocket.on("update", (data) => {
     if (timerValue === null) {
         timerValue = { value: 1 };
     }
-    fetch('/getTimer', { method: "GET" })
-        .then(response => response.json())
-        .then(json => { timerValue.value = json.minutes; console.log(json); });
+    fetch("/getTimer", { method: "GET" })
+        .then((response) => response.json())
+        .then((json) => {
+        timerValue.value = json.minutes;
+        console.log(json);
+    });
 });
 function update() {
     // console.log("update called")
@@ -63,7 +66,7 @@ function updateTimer() {
         //     body: JSON.stringify({minutes: timerValue.value})
         // });
         const res = yield fetchWithAlert("/setTimer", "POST", {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
         }, { minutes: timerValue.value });
         if (!res.ok) {
             console.log(`Response status: ${res.status}`);
@@ -80,7 +83,7 @@ function updateStatus(button, status) {
         let data = {
             number: number,
             time: time,
-            status: status
+            status: status,
         };
         // await fetch('/updateBusStatus', {
         //     method: 'POST',
@@ -90,7 +93,7 @@ function updateStatus(button, status) {
         //     body: JSON.stringify(data)
         // })
         yield fetchWithAlert("/updateBusStatus", "POST", {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
         }, data);
         update();
         // rerender the page
@@ -168,23 +171,23 @@ function updateBusChange(button) {
         //     body: JSON.stringify(data)
         // })
         yield fetchWithAlert("/updateBusChange", "POST", {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
         }, data);
         // location.reload
         update();
     });
 }
 // Set the date we're counting down to
-fetch('/leavingAt')
-    .then(response => response.json())
-    .then(data => {
+fetch("/leavingAt")
+    .then((response) => response.json())
+    .then((data) => {
     // convert the data string to a date object
     const leavingAt = new Date(data);
     countDownDate = leavingAt; // Assign the value to countDownDate
     console.log(leavingAt);
 })
-    .catch(error => {
-    console.error('Error:', error);
+    .catch((error) => {
+    console.error("Error:", error);
 });
 // Update the count down every 1 second
 var x = setInterval(function () {
@@ -201,9 +204,10 @@ var x = setInterval(function () {
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
         // Output the result in an element with id="demo"
         document.querySelectorAll("[id=timer]").forEach((element) => {
-            element.innerHTML = "The current wave will leave in " + minutes + "min " + seconds + "sec ";
+            element.innerHTML =
+                "The current wave will leave in " + minutes + "min " + seconds + "sec ";
         });
-        // If the count down is over, write some text 
+        // If the count down is over, write some text
         if (distance < 0) {
             document.querySelectorAll("[id=timer]").forEach((element) => {
                 element.innerHTML = "The current wave is about to leave!";
@@ -213,7 +217,7 @@ var x = setInterval(function () {
 }, 1000);
 function fetchWithAlert(endpoint, method, header, data) {
     return __awaiter(this, void 0, void 0, function* () {
-        setTransparency(false);
+        setHidden(false);
         updatingCount++;
         console.log(updatingCount);
         var response = yield fetch(endpoint, {
@@ -224,11 +228,11 @@ function fetchWithAlert(endpoint, method, header, data) {
         if (response.ok) {
             updatingCount--;
             console.log(updatingCount);
-            if (updatingCount === 0) {
-                setTransparency(true);
+            if (updatingCount !== 0) {
+                setHidden(true);
             }
             else {
-                setTransparency(false);
+                setHidden(false);
             }
             // alert("Update applied");
         }
@@ -238,8 +242,17 @@ function fetchWithAlert(endpoint, method, header, data) {
         return response;
     });
 }
-function setTransparency(option) {
-    var div = document.getElementsByClassName("popup")[0];
-    div.style.opacity = option ? "0" : "1";
+function setHidden(option) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var div = document.getElementsByClassName("popup")[0];
+        if (div) {
+            if (option) {
+                div.style.top = "-100px";
+            }
+            else {
+                div.style.top = "10px";
+            }
+        }
+    });
 }
 //# sourceMappingURL=adminConnect.js.map
