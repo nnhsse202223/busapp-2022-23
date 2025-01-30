@@ -58,7 +58,7 @@ function enablePushNotifications(publicKey) {
             }
         }
         else if ('serviceWorker' in navigator) { // If the browser supports service workers but not notifications, I'm like 60% sure it'll be safari on IOS
-            document.getElementById('IOSnotifpopup').style.display = 'block'; // Is it just me or is half of typescript just disabling TypeScript features... Maybe I'm doing this wrong...
+            document.getElementById('IOSnotifpopup').style.display = 'block';
         }
         else {
             alert("Your browser is not supported :(");
