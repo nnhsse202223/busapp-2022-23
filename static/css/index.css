@@ -16,21 +16,31 @@ body {
     height: 7%;
 }
 
-#IOSnotifpopup {
+#IOSnotifpopup > div {
     box-sizing: border-box;
-    display: unset; 
     position: fixed; 
     top: 50%; 
     left: 50%; 
-    transform: 
-    translateX(-50%) 
-    translateY(-50%); 
-    width: 90%; 
-    height: 90%;
+    transform: translateX(-50%) translateY(-50%); 
+    width: calc(100% - min(10%, 50px)); 
+    height: calc(100% - min(10%, 50px));
     background-color: lightgray;
     border: 5px solid #327fa8;
     border-radius: 10px;
-    padding: 15px;
+    padding: 1em;
+    overflow: auto;
+}
+#IOSnotifpopup {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: rgba(20, 20, 20, 0.5);
+    backdrop-filter: blur(5px);
+    font-family: 'Montserrat', sans-serif;
+    font-size: calc(1vw + 1em);
 }
 
 .weather-container {
