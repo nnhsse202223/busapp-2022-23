@@ -40,6 +40,7 @@ adminSocket.on("update", (data) => {
 
 function update() {
   // console.log("update called")
+
   adminSocket.emit("updateMain", {
     type: "update",
   });
@@ -79,6 +80,7 @@ async function updateTimer() {
   } else {
     console.log(await res.text());
   }
+  
 }
 
 async function updateStatus(button, status) {
@@ -239,37 +241,38 @@ async function fetchWithAlert(
   header: HeadersInit,
   data: object
 ) {
-    setHidden(false);
   updatingCount++;
-  console.log(updatingCount);
-  var response = await fetch(endpoint, {
-    method: method,
-    headers: header,
-    body: JSON.stringify(data),
-  });
-  if (response.ok) {
+  setHidden(false);
+  var response;
+  try {
+    response = await fetch(endpoint, {
+      method: method,
+      headers: header,
+      body: JSON.stringify(data),
+    });
+  } catch (error) {
+    console.error("Error:", error);
+  }finally {
     updatingCount--;
-    console.log(updatingCount);
-    if (updatingCount !== 0) {
-      setHidden(true);
-    } else {
+    if (updatingCount == 0) {
       setHidden(false);
+    } else {
+      setHidden(true);
     }
-    // alert("Update applied");
-  } else {
-    alert("Update failed");
+    return response;
   }
 
-  return response;
 }
 
 async function setHidden(option: boolean) {
   var div = document.getElementsByClassName("popup")[0] as HTMLElement;
   if (div) {
     if (option) {
-      div.style.top = "-100px";
+      div.style.animationPlayState = "running";
+      div.style.animationDelay = "0s";
     } else {
       div.style.top = "10px";
+      div.style.animationDelay = "0s";
     }
   }
 }

@@ -240,10 +240,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
-    transition: top 1s ease-in;
-    opacity: 1;
+    background-color: lightgray;
+    border: 5px sole #327fa8;
+    animation: slide ease-in;
+    animation-duration: 0.5s;
     /* z-index: 1000; */
+}
+
+@keyframes slide {
+    0% {
+        top: 10px;
+    }
+    100% {
+        top: -100px;
+    }
 }
 
 

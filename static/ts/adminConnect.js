@@ -217,29 +217,29 @@ var x = setInterval(function () {
 }, 1000);
 function fetchWithAlert(endpoint, method, header, data) {
     return __awaiter(this, void 0, void 0, function* () {
-        setHidden(false);
         updatingCount++;
-        console.log(updatingCount);
-        var response = yield fetch(endpoint, {
-            method: method,
-            headers: header,
-            body: JSON.stringify(data),
-        });
-        if (response.ok) {
+        setHidden(false);
+        var response;
+        try {
+            response = yield fetch(endpoint, {
+                method: method,
+                headers: header,
+                body: JSON.stringify(data),
+            });
+        }
+        catch (error) {
+            console.error("Error:", error);
+        }
+        finally {
             updatingCount--;
-            console.log(updatingCount);
-            if (updatingCount !== 0) {
-                setHidden(true);
-            }
-            else {
+            if (updatingCount == 0) {
                 setHidden(false);
             }
-            // alert("Update applied");
+            else {
+                setHidden(true);
+            }
+            return response;
         }
-        else {
-            alert("Update failed");
-        }
-        return response;
     });
 }
 function setHidden(option) {
@@ -247,10 +247,12 @@ function setHidden(option) {
         var div = document.getElementsByClassName("popup")[0];
         if (div) {
             if (option) {
-                div.style.top = "-100px";
+                div.style.animationPlayState = "running";
+                div.style.animationDelay = "0s";
             }
             else {
                 div.style.top = "10px";
+                div.style.animationDelay = "0s";
             }
         }
     });
