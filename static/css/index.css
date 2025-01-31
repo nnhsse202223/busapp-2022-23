@@ -259,6 +259,20 @@ body {
     margin-bottom: 3%;
 }
 
+.credits-dropdown {
+    transform-origin: top;
+    overflow: hidden;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    max-height: 0;
+    transition: clip-path 1s, max-height 1s;
+}
+#credits-dropdown:checked ~ .credits-dropdown {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    max-height: 10000000px;
+    transition: clip-path 1s, max-height 1s;
+}
+
+
 @media (orientation: landscape) {
     .header {
         grid-template-columns: 4fr 9fr 3fr;
