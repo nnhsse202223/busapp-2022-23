@@ -234,7 +234,7 @@ body {
     left: 50%;
     font-family: 'Montserrat', sans-serif;
     transform: translateX(-50%);
-    width: 300px;
+    width: 50%;
     height: 100px;
     border-radius: 5px;
     display: flex;
