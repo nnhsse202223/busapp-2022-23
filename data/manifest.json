@@ -1,6 +1,6 @@
 {
-    "name": "Bus App NNHS",
-    "short_name": "BusApp",
+    "name": "NNHS Bus App",
+    "short_name": "Bus App",
     "start_url": "/",
     "scope": "./",
     "icons": [
