@@ -286,6 +286,42 @@ body {
     margin-bottom: 3%;
 }
 
+
+.credits-dropdown {
+    font-family: 'Montserrat', sans-serif;
+    overflow: hidden;
+    position: absolute;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    transform: translateY(0);
+    max-height: 0px;
+    transition: clip-path 1s, transform 1s, max-height 1s;
+    background-color: lightgray;
+    z-index: 0;
+    width: 100%;
+}
+#credits-dropdown:checked ~ .credits-dropdown {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    transform: translateY(-100%);
+    max-height: 9999999999999px;
+    transition: clip-path 1s, transform 1s;
+}
+#credits-dropdown {
+    display: none;
+}
+
+.credits-dropdown-label::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: relative;
+    content: "\f062";
+    padding: 5px;
+    z-index: 1;
+}
+#credits-dropdown:checked ~ .credits-dropdown-label::before {
+    content: "\f063";
+}
+
+
 @media (orientation: landscape) {
     .header {
         grid-template-columns: 4fr 9fr 3fr;
