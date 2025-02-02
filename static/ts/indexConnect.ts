@@ -76,6 +76,8 @@ function pinBus(button: HTMLInputElement) { // pins the bus when the user clicks
     updatePins();
     const busRow = button.parentElement!.parentElement; // this is the overarching <tr> element of the bus row
     const busNumber = busRow!.firstElementChild!.innerHTML; // this is the stringification of the number of the bus
+
+    var removing = false;
     
     const num = parseInt(busNumber); // this is the number of the bus
     if (pins.includes(num) == false) {
@@ -84,6 +86,7 @@ function pinBus(button: HTMLInputElement) { // pins the bus when the user clicks
         let newPinString = pins.join(", "); // representation of the pins list as a string
         localStorage.setItem("pins", newPinString);
     } else {
+        removing = true;
         pins = pins.filter(function notNum(n: number) {return n != num;}); // this is how you remove elements in js arrays. pain
         pins.sort();
         if (pins.length == 0) {
@@ -94,6 +97,16 @@ function pinBus(button: HTMLInputElement) { // pins the bus when the user clicks
         }
     }
     updateTables();
+
+    if(localStorage.getItem("pushObject")) {
+        fetch("/subscribe", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({busNumber: num, pushObject: localStorage.getItem("pushObject"), remove: removing}),
+        });
+    }
 }
 
 
