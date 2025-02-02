@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var adminSocket = window.io('/admin');
+var adminSocket = window.io("/admin");
 var countDownDate = new Date();
+var updatingCount = 0;
 adminSocket.on("update", (data) => {
     // console.log("update received")
     // console.log(data)
@@ -29,10 +30,12 @@ adminSocket.on("update", (data) => {
     if (timerValue === null) {
         timerValue = { value: 1 };
     }
-    fetch('/getTimer', { method: "GET" })
-        .then(response => response.json())
-        .then(json => { timerValue.value = json.minutes; console.log(json); });
-    console.log(timerValue.value);
+    fetch("/getTimer", { method: "GET" })
+        .then((response) => response.json())
+        .then((json) => {
+        timerValue.value = json.minutes;
+        console.log(json);
+    });
 });
 function update() {
     // console.log("update called")
@@ -42,9 +45,10 @@ function update() {
 }
 function lockWave() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield fetch('/lockWave', {
-            method: 'POST'
-        });
+        // await fetch('/lockWave', {
+        //     method: 'POST'
+        // })
+        yield fetchWithAlert("/lockWave", "POST", {}, {});
         update();
     });
 }
@@ -54,13 +58,16 @@ function updateTimer() {
         if (timerValue === null) {
             timerValue = { value: 1 };
         }
-        const res = yield fetch("/setTimer", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ minutes: timerValue.value })
-        });
+        // const res = await fetch("/setTimer", {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({minutes: timerValue.value})
+        // });
+        const res = yield fetchWithAlert("/setTimer", "POST", {
+            "Content-Type": "application/json",
+        }, { minutes: timerValue.value });
         if (!res.ok) {
             console.log(`Response status: ${res.status}`);
         }
@@ -76,15 +83,18 @@ function updateStatus(button, status) {
         let data = {
             number: number,
             time: time,
-            status: status
+            status: status,
         };
-        yield fetch('/updateBusStatus', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+        // await fetch('/updateBusStatus', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data)
+        // })
+        yield fetchWithAlert("/updateBusStatus", "POST", {
+            "Content-Type": "application/json",
+        }, data);
         update();
         // rerender the page
         // location.reload
@@ -92,9 +102,16 @@ function updateStatus(button, status) {
 }
 function sendWave() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield fetch('/sendWave', {
-            method: 'POST'
-        });
+        // alert("Update sent to server");
+        // var response = await fetch('/sendWave', {
+        //     method: 'POST'
+        // })
+        // if (response.ok) {
+        //     alert("Update applied");
+        // } else {
+        //     alert("Update failed");
+        // }
+        yield fetchWithAlert("/sendWave", "POST", {}, {});
         update();
         // location.reload
     });
@@ -102,16 +119,22 @@ function sendWave() {
 function addToWave(button) {
     return __awaiter(this, void 0, void 0, function* () {
         yield updateStatus(button, "Loading");
+        // let number = button.parentElement.parentElement.children[0].children[0].value
+        // alert(number + " added to wave");
     });
 }
 function removeFromWave(button) {
     return __awaiter(this, void 0, void 0, function* () {
         yield updateStatus(button, "");
+        // let number = button.parentElement.parentElement.children[0].children[0].value
+        // alert(number + "removed from wave");
     });
 }
 function addToNextWave(button) {
     return __awaiter(this, void 0, void 0, function* () {
         yield updateStatus(button, "Next Wave");
+        // let number = button.parentElement.parentElement.children[0].children[0].value
+        // alert(number + " added to next wave");
     });
 }
 function reset(button) {
@@ -121,9 +144,10 @@ function reset(button) {
 }
 function resetAllBusses(button) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield fetch('/resetAllBusses', {
-            method: 'POST'
-        });
+        // await fetch('/resetAllBusses', {
+        //     method: 'POST'
+        // })
+        yield fetchWithAlert("/resetAllBusses", "POST", {}, {});
         // location.reload
         update();
     });
@@ -139,28 +163,31 @@ function updateBusChange(button) {
             change: change,
             time: time,
         };
-        yield fetch('/updateBusChange', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+        // await fetch('/updateBusChange', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data)
+        // })
+        yield fetchWithAlert("/updateBusChange", "POST", {
+            "Content-Type": "application/json",
+        }, data);
         // location.reload
         update();
     });
 }
 // Set the date we're counting down to
-fetch('/leavingAt')
-    .then(response => response.json())
-    .then(data => {
+fetch("/leavingAt")
+    .then((response) => response.json())
+    .then((data) => {
     // convert the data string to a date object
     const leavingAt = new Date(data);
     countDownDate = leavingAt; // Assign the value to countDownDate
     console.log(leavingAt);
 })
-    .catch(error => {
-    console.error('Error:', error);
+    .catch((error) => {
+    console.error("Error:", error);
 });
 // Update the count down every 1 second
 var x = setInterval(function () {
@@ -177,9 +204,10 @@ var x = setInterval(function () {
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
         // Output the result in an element with id="demo"
         document.querySelectorAll("[id=timer]").forEach((element) => {
-            element.innerHTML = "The current wave will leave in " + minutes + "min " + seconds + "sec ";
+            element.innerHTML =
+                "The current wave will leave in " + minutes + "min " + seconds + "sec ";
         });
-        // If the count down is over, write some text 
+        // If the count down is over, write some text
         if (distance < 0) {
             document.querySelectorAll("[id=timer]").forEach((element) => {
                 element.innerHTML = "The current wave is about to leave!";
@@ -187,4 +215,46 @@ var x = setInterval(function () {
         }
     });
 }, 1000);
+function fetchWithAlert(endpoint, method, header, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        updatingCount++;
+        setHidden(false);
+        var response;
+        try {
+            response = yield fetch(endpoint, {
+                method: method,
+                headers: header,
+                body: JSON.stringify(data),
+            });
+        }
+        catch (error) {
+            console.error("Error:", error);
+        }
+        finally {
+            updatingCount--;
+            if (updatingCount == 0) {
+                setHidden(false);
+            }
+            else {
+                setHidden(true);
+            }
+            return response;
+        }
+    });
+}
+function setHidden(option) {
+    return __awaiter(this, void 0, void 0, function* () {
+        var div = document.getElementsByClassName("popup")[0];
+        if (div) {
+            if (option) {
+                div.style.animationPlayState = "running";
+                div.style.animationDelay = "0s";
+            }
+            else {
+                div.style.top = "10px";
+                div.style.animationDelay = "0s";
+            }
+        }
+    });
+}
 //# sourceMappingURL=adminConnect.js.map
