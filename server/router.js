@@ -182,7 +182,6 @@ exports.router.post("/sendWave", (req, res) => __awaiter(void 0, void 0, void 0,
         res.redirect("/login");
         return;
     }
-
     if (!(null === (yield Wave.findOne({ locked: true }))))
         (yield Bus.find({ status: "Loading" })).forEach((bus) => __awaiter(void 0, void 0, void 0, function* () {
             (yield Subscription.find({ bus: bus.busNumber })).forEach((sub) => __awaiter(void 0, void 0, void 0, function* () {
@@ -200,7 +199,6 @@ exports.router.post("/sendWave", (req, res) => __awaiter(void 0, void 0, void 0,
                 }
             }));
         }));
-
     yield Bus.updateMany({ status: "Loading" }, { $set: { status: "Gone" } });
     yield Bus.updateMany({ status: "Next Wave" }, { $set: { status: "Loading" } });
     yield Wave.findOneAndUpdate({}, { locked: false }, { upsert: true });
