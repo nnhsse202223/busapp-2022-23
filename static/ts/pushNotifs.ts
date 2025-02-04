@@ -55,23 +55,25 @@ async function enablePushNotifications(publicKey) {
     }
 }
 
-var areServiceWorkersWorking = navigator.serviceWorker.getRegistrations().then(e => {
-    if(e.length !== 0) {
-        e.forEach( i => {
-            if(!i.active) {
-                console.log(i); 
-                return false;
-            }
-        } )
-    } else {
-        return false;
-    }
-    return true;
-});
+function removeNotifButton() {
+    var areServiceWorkersWorking = navigator.serviceWorker.getRegistrations().then(e => {
+        if(e.length !== 0) {
+            e.forEach( i => {
+                if(!i.active) {
+                    console.log(i); 
+                    return false;
+                }
+            } )
+        } else {
+            return false;
+        }
+        return true;
+    });
 
-areServiceWorkersWorking.then(condition => {
-    if (Notification.permission === "granted" && condition) {
-        console.log(areServiceWorkersWorking);
-        document.getElementById("notif-container")?.remove()
-    }
-})
+    areServiceWorkersWorking.then(condition => {
+        if (Notification.permission === "granted" && condition) {
+            console.log(areServiceWorkersWorking);
+            document.getElementById("notif-container")?.remove()
+        }
+    })
+}
