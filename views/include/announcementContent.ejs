@@ -9,7 +9,7 @@
     <textarea type="text" name="tvAnnouncement" class="content"><%= currentTvAnnouncement%></textarea>
     <div class="buttonsTv">
         <button class="button" type="submit" onclick="clearTvAnnouncement()">Clear Current Announcement</button>
-        <button class="button back-button" onclick="makeNewAnnouncement()" href="/admin">Back to Admin Page</a>
+        <button class="button back-button" onclick="save_()" href="/admin">Back to Admin Page</a>
     </div>
 </form>
 
@@ -23,3 +23,26 @@
         document.getElementsByName("tvAnnouncement")[0].value = "";
     }
 </script>
+<script>
+    async function save_() {
+    // if (!confirm("Are you sure you would like to update the bus list and reset all live pages?")) return;
+    
+    await fetch("/updateAnnouncement", {
+        method: 'POST',
+        headers: {
+            accept: 'application.json',
+            'Content-Type': 'application/json'
+        },
+        body: 
+        JSON.stringify({
+            announcement: document.getElementsByName("announcement")[0].value,
+            tvAnnouncement: document.getElementsByName("tvAnnouncement")[0].value
+        })
+    });
+
+    updateAnnouncement();
+
+    window.location.assign("/admin");
+}
+</script>
+<script src="js/updateAnnouncementConnect.js"></script>
